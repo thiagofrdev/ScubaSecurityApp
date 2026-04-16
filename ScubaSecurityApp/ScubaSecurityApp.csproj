@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Algorithms\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
