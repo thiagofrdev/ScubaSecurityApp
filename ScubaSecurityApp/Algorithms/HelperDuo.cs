@@ -37,7 +37,6 @@ namespace ScubaSecurityApp.Algorithms
                     if (m2.PressaoCilindro > 100 && diferencaProfundidade <= 5.0)
                     {
                         Console.WriteLine(FormatarConexaoResgate(m1, m2));
-                        //Console.WriteLine($"Dupla Encontrada: {m1.Id:00} ({m1.PressaoCilindro,5:F1}Bar)|{m1.Profundidade,5:F1}Metros) ajuda {m2.Id:00} ({m2.PressaoCilindro,5:F1}Bar)|{m2.Profundidade,5:F1}Metros)");
                     }
                 }
             }

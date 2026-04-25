@@ -8,7 +8,6 @@ namespace ScubaSecurityApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("=== Sistema de Monitoramento de Mergulho ===");
             Console.WriteLine("=============================================");
             Console.WriteLine(" SCUBA SECURITY - MONITORAMENTO DE MERGULHO ");
             Console.WriteLine("=============================================\n");
