@@ -1,5 +1,6 @@
 ﻿using System;
 using ScubaSecurityApp.Models;
+using ScubaSecurityApp.Services;
 
 namespace ScubaSecurityApp
 {
@@ -11,8 +12,27 @@ namespace ScubaSecurityApp
             Console.WriteLine(" SCUBA SECURITY - MONITORAMENTO DE MERGULHO ");
             Console.WriteLine("=============================================\n");
 
-            Mergulhador teste = new Mergulhador(1, 12.5, 195.0);
-            Console.WriteLine(teste.ToString());
+            int quantidadeMergulhadores = 10;
+            List<Mergulhador> mergulhadores = DataGenerator.GerarDadosMergulhadores(quantidadeMergulhadores);
+
+            Console.WriteLine("=== Lista de Mergulhadores Monitorados ===");
+            foreach (var m in mergulhadores) Console.WriteLine(m.ToString());
+
+            Console.WriteLine("\n---------------------------------------------");
+            Console.WriteLine("Pressione qualquer tecla para continuar...");
+            Console.ReadKey();
+
+            ScubaSecurityApp.Algorithms.Sorters.BubbleSortByPressao(mergulhadores);
+
+            Console.WriteLine("\n=== Lista Ordenada por Pressão (Crescente) ===");
+            foreach (var m in mergulhadores) Console.WriteLine(m.ToString());
+
+            Console.WriteLine("\n---------------------------------------------");
+            Console.WriteLine("Pressione qualquer tecla para continuar...");
+            Console.ReadKey();
+
+            Console.WriteLine("\n=== Análise de Segurança: Compatibilidade para compartilhamento de ar ===");
+            ScubaSecurityApp.Algorithms.Analysis.AnalisarAutonomiaCruzada(mergulhadores);
 
             Console.WriteLine("\n---------------------------------------------");
             Console.WriteLine("Pressione qualquer tecla para encerrar...");
