@@ -13,7 +13,7 @@ namespace ScubaSecurityApp.Services
             for (int id = 1; id <= qtd; id++)
             {
                 double profundidade = _random.NextDouble() * 40; //De 0 a 40 metros
-                double pressao = 50 + (_random.NextDouble() * 250); //De 50 a 500 Bar
+                double pressao = 50 + (_random.NextDouble() * 250); //De 50 a 300 Bar
                 listaDeDados.Add(new Mergulhador(id, profundidade, pressao));
             }
 
