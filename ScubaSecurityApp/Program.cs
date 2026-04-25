@@ -8,9 +8,7 @@ namespace ScubaSecurityApp
     {
         static void Main(string[] args)
         {
-<<<<<<< Updated upstream
             Console.WriteLine("=== Sistema de Monitoramento de Mergulho ===");
-=======
             Console.WriteLine("=============================================");
             Console.WriteLine(" SCUBA SECURITY - MONITORAMENTO DE MERGULHO ");
             Console.WriteLine("=============================================\n");
@@ -42,7 +40,6 @@ namespace ScubaSecurityApp
             Console.WriteLine("\n---------------------------------------------");
             Console.WriteLine("Pressione qualquer tecla para encerrar...");
             Console.ReadKey();
->>>>>>> Stashed changes
         }
     }
 }
