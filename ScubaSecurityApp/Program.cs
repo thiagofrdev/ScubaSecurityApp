@@ -1,5 +1,6 @@
 ﻿using System;
 using ScubaSecurityApp.Models;
+using ScubaSecurityApp.Services;
 
 namespace ScubaSecurityApp
 {
