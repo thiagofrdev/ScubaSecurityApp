@@ -21,7 +21,7 @@ namespace ScubaSecurityApp.Algorithms
             for (int i = 0; i < mergulhadores.Count; i++)
             {
                 Mergulhador m1 = mergulhadores[i];
-                
+                    
                 for (int j = 0; j < mergulhadores.Count; j++)
                 {
                     // Não comparar o mergulhador com ele mesmo

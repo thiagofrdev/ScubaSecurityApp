@@ -12,7 +12,33 @@ namespace ScubaSecurityApp
             Console.WriteLine(" SCUBA SECURITY - MONITORAMENTO DE MERGULHO ");
             Console.WriteLine("=============================================\n");
 
-            int quantidadeMergulhadores = 10;
+            int quantidadeMergulhadores;
+
+            while (true)
+            {
+                Console.WriteLine("Quantos mergulhadores deseja monitorar?");
+                Console.WriteLine("Dica: Digite 'Q' para usar o valor padrão (10)");
+                Console.Write("Quantidade: ");
+
+                string input = Console.ReadLine()?.Trim().ToUpper();
+
+                if (input == "Q" || input == "q")
+                {
+                    quantidadeMergulhadores = 10;
+                    Console.WriteLine("Usando valor padrão: 10 mergulhadores.");
+                    break;
+                }
+
+                if (int.TryParse(input, out quantidadeMergulhadores) && quantidadeMergulhadores > 0)
+                {
+                    break;
+                }
+
+                Console.WriteLine("\n[ERRO] Entrada inválida! Por favor, digite um número inteiro positivo ou 'Q'.\n");
+            }
+
+            Console.WriteLine($"\nIniciando monitoramento de {quantidadeMergulhadores} mergulhadores...\n");
+
             List<Mergulhador> mergulhadores = DataGenerator.GerarDadosMergulhadores(quantidadeMergulhadores);
 
             Console.WriteLine("=== Lista de Mergulhadores Monitorados ===");
