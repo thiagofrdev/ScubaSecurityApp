@@ -7,6 +7,10 @@ namespace ScubaSecurityClient
 {
     class Program
     {
+        /// <summary>
+        /// Ponto de entrada do Cliente. 
+        /// Inicia a simulação paralela de múltiplos sensores.
+        /// </summary>
         static void Main(string[] args)
         {
             Console.WriteLine("=============================================");
@@ -31,8 +35,10 @@ namespace ScubaSecurityClient
 
         /// <summary>
         /// Simula o sensor de um mergulhador rodando em paralelo.
-        /// Complexidade de execução: O(1) por envio, rodando em loop infinito até o mergulhador desconectar.
+        /// Complexidade: O(1) por iteração de envio, rodando em loop infinito.
+        /// Razão: Cada thread executa operações de tempo constante (geração de randômicos e escrita na stream de rede).
         /// </summary>
+        /// <param name="id">Identificador único do mergulhador simulado.</param>
         static void SimularSensorMergulhador(int id)
         {
             try
@@ -42,20 +48,21 @@ namespace ScubaSecurityClient
                 using StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
 
                 Random rand = new Random();
-                int pressaoBar = 200; // Cilindro cheio
+                double pressaoBar = 200; // Cilindro cheio
 
                 while (pressaoBar > 0)
                 {
                     // Simula a geração randômica dos dados do sensor
                     int profundidade = rand.Next(10, 40);
-                    pressaoBar -= rand.Next(1, 5);
+                    double consumo = 0.5 + (rand.NextDouble() * (1.3 - 0.5));
+                    pressaoBar -= consumo;
 
-                    string payload = $"ID:{id:D2} | Profundidade:{profundidade}m | Pressao:{pressaoBar}Bar";
+                    string payload = $"ID:{id:D2} | Profundidade:{profundidade}m | Pressao:{pressaoBar:F2}Bar";
 
                     writer.WriteLine(payload);
                     Console.WriteLine($"[Mergulhador {id:D2}] Dado enviado.");
 
-                    Thread.Sleep(2000);
+                    Thread.Sleep(100);
                 }
             }
             catch (Exception)
