@@ -1,2 +1,67 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Client");
+﻿using System;
+using System.IO;
+using System.Net.Sockets;
+using System.Threading;
+
+namespace ScubaSecurityClient
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("=============================================");
+            Console.WriteLine(" SCUBA SECURITY - SENSORES (CLIENTE - V1) ");
+            Console.WriteLine("=============================================\n");
+
+            int quantidadeMergulhadores = 10;
+
+            Console.WriteLine($"Iniciando simulação com {quantidadeMergulhadores} Threads (Mergulhadores)...\n");
+
+            // Dispara 10 Threads, cada uma simulando um mergulhador diferente enviando dados para o servidor.
+            for (int i = 1; i <= quantidadeMergulhadores; i++)
+            {
+                int idMergulhador = i;
+                Thread threadSensor = new Thread(() => SimularSensorMergulhador(idMergulhador));
+                threadSensor.Start();
+            }
+
+            Console.WriteLine("Pressione [ENTER] para encerrar os sensores...\n");
+            Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Simula o sensor de um mergulhador rodando em paralelo.
+        /// Complexidade de execução: O(1) por envio, rodando em loop infinito até o mergulhador desconectar.
+        /// </summary>
+        static void SimularSensorMergulhador(int id)
+        {
+            try
+            {
+                using TcpClient cliente = new TcpClient("127.0.0.1", 8080);
+                using NetworkStream stream = cliente.GetStream();
+                using StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
+
+                Random rand = new Random();
+                int pressaoBar = 200; // Cilindro cheio
+
+                while (pressaoBar > 0)
+                {
+                    // Simula a geração randômica dos dados do sensor
+                    int profundidade = rand.Next(10, 40);
+                    pressaoBar -= rand.Next(1, 5);
+
+                    string payload = $"ID:{id:D2} | Profundidade:{profundidade}m | Pressao:{pressaoBar}Bar";
+
+                    writer.WriteLine(payload);
+                    Console.WriteLine($"[Mergulhador {id:D2}] Dado enviado.");
+
+                    Thread.Sleep(2000);
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"[Mergulhador {id:D2}] Falha ao conectar com o barco.");
+            }
+        }
+    }
+}
