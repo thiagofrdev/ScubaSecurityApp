@@ -52,9 +52,8 @@ namespace ScubaSecurityClient
 
                 while (pressaoBar > 0)
                 {
-                    // Simula a geração randômica dos dados do sensor
                     int profundidade = rand.Next(10, 40);
-                    double consumo = 0.5 + (rand.NextDouble() * (1.3 - 0.5));
+                    double consumo = 0.4 - (rand.NextDouble() * (0.4 - 0.9));
                     pressaoBar -= consumo;
 
                     string payload = $"ID:{id:D2} | Profundidade:{profundidade}m | Pressao:{pressaoBar:F2}Bar";

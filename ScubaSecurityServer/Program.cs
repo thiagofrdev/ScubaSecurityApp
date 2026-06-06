@@ -69,8 +69,8 @@ namespace ScubaSecurityServer
                     {
                         string[] partes = mensagem.Split('|');
                         int id = int.Parse(partes[0].Split(':')[1].Trim());
-                        int profundidade = int.Parse(partes[1].Split(':')[1].Replace("m", "").Trim());
-                        int pressao = int.Parse(partes[2].Split(':')[1].Replace("Bar", "").Trim());
+                        double profundidade = double.Parse(partes[1].Split(':')[1].Replace("m", "").Trim());
+                        double pressao = double.Parse(partes[2].Split(':')[1].Replace("Bar", "").Trim());
 
                         lock (lockObj)
                         {
