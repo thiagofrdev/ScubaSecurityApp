@@ -15,6 +15,9 @@ namespace ScubaSecurityServer
         static List<Mergulhador> estadoMergulhadores = new List<Mergulhador>();
         static readonly object lockObj = new object();
 
+        /// <summary>
+        /// Ponto de entrada do Servidor. Inicializa a escuta de rede e a thread de processamento.
+        /// </summary>
         static async Task Main(string[] args)
         {
             Console.WriteLine("=============================================");
@@ -44,6 +47,12 @@ namespace ScubaSecurityServer
             }
         }
 
+        /// <summary>
+        /// Lê continuamente o fluxo de dados enviado por um cliente (sensor) específico.
+        /// Complexidade: O(M) onde M é o número de mensagens recebidas.
+        /// Razão: O laço while processa de forma linear cada mensagem enviada pela rede em tempo constante.
+        /// </summary>
+        /// <param name="cliente">A conexão TCP estabelecida com o cliente.</param>
         static void TratarCliente(TcpClient cliente)
         {
             try
@@ -83,11 +92,16 @@ namespace ScubaSecurityServer
             finally { cliente.Close(); }
         }
 
+        /// <summary>
+        /// Executa repetidamente os algoritmos de ordenação e análise sobre o estado global.
+        /// Complexidade: O(N²) devido à chamada de BubbleSort e AnalisarAutonomiaCruzada.
+        /// Razão: Em intervalos curtos, bloqueia a lista e executa loops aninhados (N*N) para ordenar e analisar.
+        /// </summary>
         static void ProcessarDadosPesados()
         {
             while (true)
             {
-                Thread.Sleep(3000);
+                Thread.Sleep(500);
 
                 lock (lockObj)
                 {
