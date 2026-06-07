@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Threading;
 using ScubaSecurityServer.Models;
-using ScubaSecurityServer.Algorithms;
+using ScubaSecurityServer.Security;
 
 namespace ScubaSecurityServer
 {
@@ -15,14 +15,19 @@ namespace ScubaSecurityServer
         static List<Mergulhador> estadoMergulhadores = new List<Mergulhador>();
         static readonly object lockObj = new object();
 
-        /// <summary>
-        /// Ponto de entrada do Servidor. Inicializa a escuta de rede e a thread de processamento.
-        /// </summary>
         static async Task Main(string[] args)
         {
             Console.WriteLine("=============================================");
-            Console.WriteLine(" SCUBA SECURITY - SERVIDOR (Versão 1 - Sem Otimização) ");
+            Console.WriteLine(" SCUBA SECURITY - SERVIDOR (V2 - Seguro e Otimizado) ");
             Console.WriteLine("=============================================\n");
+
+            try {
+                CryptoHelper.InicializarComRuidoAcustico("mergulho.wav");
+                Console.WriteLine("[SEGURANÇA] Criptografia baseada em entropia acústica ATIVADA.\n");
+            } catch (Exception ex) {
+                Console.WriteLine($"[ERRO DE ÁUDIO] {ex.Message}. Verifica se o ficheiro .wav está na pasta.");
+                return;
+            }
 
             int porta = 8080;
             TcpListener listener = new TcpListener(IPAddress.Any, porta);
@@ -31,9 +36,6 @@ namespace ScubaSecurityServer
             {
                 listener.Start();
                 Console.WriteLine($"[SERVIDOR] A escutar na porta {porta}...\n");
-
-                Thread threadProcessamento = new Thread(ProcessarDadosPesados);
-                threadProcessamento.Start();
 
                 while (true)
                 {
@@ -47,80 +49,48 @@ namespace ScubaSecurityServer
             }
         }
 
-        /// <summary>
-        /// Lê continuamente o fluxo de dados enviado por um cliente (sensor) específico.
-        /// Complexidade: O(M) onde M é o número de mensagens recebidas.
-        /// Razão: O laço while processa de forma linear cada mensagem enviada pela rede em tempo constante.
-        /// </summary>
-        /// <param name="cliente">A conexão TCP estabelecida com o cliente.</param>
         static void TratarCliente(TcpClient cliente)
         {
             try
             {
                 using NetworkStream stream = cliente.GetStream();
                 using StreamReader reader = new StreamReader(stream);
+                using StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
 
                 while (cliente.Connected)
                 {
-                    string? mensagem = reader.ReadLine();
-                    if (mensagem == null) break; 
+                    string? mensagemCifrada = reader.ReadLine();
+                    if (mensagemCifrada == null) break; 
 
-                    try 
+                    Console.WriteLine($"\n[REDE - Intercetado] {mensagemCifrada}");
+                    
+                    string mensagemPlana = CryptoHelper.Decriptar(mensagemCifrada);
+                    Console.WriteLine($"[SISTEMA - Decriptado] {mensagemPlana}");
+
+                    string[] partes = mensagemPlana.Split('|');
+                    int id = int.Parse(partes[0].Split(':')[1].Trim());
+                    double profundidade = double.Parse(partes[1].Split(':')[1].Replace("m", "").Trim());
+                    double pressao = double.Parse(partes[2].Split(':')[1].Replace("Bar", "").Trim());
+
+                    lock (lockObj)
                     {
-                        string[] partes = mensagem.Split('|');
-                        int id = int.Parse(partes[0].Split(':')[1].Trim());
-                        double profundidade = double.Parse(partes[1].Split(':')[1].Replace("m", "").Trim());
-                        double pressao = double.Parse(partes[2].Split(':')[1].Replace("Bar", "").Trim());
-
-                        lock (lockObj)
-                        {
-                            var m = estadoMergulhadores.Find(x => x.Id == id);
-                            if (m == null)
-                            {
-                                estadoMergulhadores.Add(new Mergulhador(id, profundidade, pressao));
-                            }
-                            else
-                            {
-                                m.Profundidade = profundidade;
-                                m.PressaoCilindro = pressao;
-                            }
-                        }
+                        var m = estadoMergulhadores.Find(x => x.Id == id);
+                        if (m == null) estadoMergulhadores.Add(new Mergulhador(id, profundidade, pressao));
+                        else { m.Profundidade = profundidade; m.PressaoCilindro = pressao; }
+                        
+                        List<string> dadosCompactos = new List<string>();
+                        foreach (var merg in estadoMergulhadores)
+                            dadosCompactos.Add($"{merg.Id},{merg.Profundidade},{merg.PressaoCilindro}");
+                        
+                        string respostaPlana = string.Join(";", dadosCompactos);
+                        string respostaCifrada = CryptoHelper.Encriptar(respostaPlana);
+                        
+                        writer.WriteLine(respostaCifrada);
                     }
-                    catch { /* Ignora erros de parse corrompido na rede */ }
                 }
             }
+            catch { /* Ignora desconexões */ }
             finally { cliente.Close(); }
-        }
-
-        /// <summary>
-        /// Executa repetidamente os algoritmos de ordenação e análise sobre o estado global.
-        /// Complexidade: O(N²) devido à chamada de BubbleSort e AnalisarAutonomiaCruzada.
-        /// Razão: Em intervalos curtos, bloqueia a lista e executa loops aninhados (N*N) para ordenar e analisar.
-        /// </summary>
-        static void ProcessarDadosPesados()
-        {
-            while (true)
-            {
-                Thread.Sleep(500);
-
-                lock (lockObj)
-                {
-                    if (estadoMergulhadores.Count > 0)
-                    {
-                        Console.WriteLine("\n--- INICIANDO PROCESSAMENTO PESADO NO SERVIDOR ---");
-                        
-                        // 1. Bubble Sort O(N^2)
-                        Console.WriteLine("A ordenar mergulhadores (Bubble Sort)...");
-                        Sorters.BubbleSortByPressao(estadoMergulhadores);
-                        
-                        // 2. Análise Cruzada O(N^2)
-                        Console.WriteLine("A calcular matriz de resgate cruzado...");
-                        Analysis.AnalisarAutonomiaCruzada(estadoMergulhadores);
-
-                        Console.WriteLine("--- FIM DO PROCESSAMENTO ---\n");
-                    }
-                }
-            }
         }
     }
 }
