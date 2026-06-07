@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ScubaSecurityServer.Models;
+using ScubaSecurityClient.Models;
 
-namespace ScubaSecurityServer.Algorithms
+namespace ScubaSecurityClient.Algorithms
 {
     public static class Sorters
     {
