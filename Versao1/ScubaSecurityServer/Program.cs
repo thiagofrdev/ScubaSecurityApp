@@ -101,7 +101,7 @@ namespace ScubaSecurityServer
         {
             while (true)
             {
-                Thread.Sleep(500);
+                Thread.Sleep(100);
 
                 lock (lockObj)
                 {

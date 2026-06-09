@@ -24,7 +24,18 @@ namespace ScubaSecurityClient
                 Console.WriteLine($"[ERRO] {ex.Message}"); return;
             }
 
-            int quantidadeMergulhadores = 10;
+            Console.WriteLine("Quantos mergulhadores deseja monitorar?");
+            Console.WriteLine("Dica: Aperte ENTER para usar o valor padrão (10)");
+            Console.Write("Quantidade: ");
+
+            string input = Console.ReadLine()?.Trim().ToUpper() ?? "";
+            int quantidadeMergulhadores = string.IsNullOrWhiteSpace(input) ? 10 : int.Parse(input);
+
+            if (quantidadeMergulhadores == 10)
+            {
+                Console.WriteLine("Usando valor padrão: 10 mergulhadores.");
+            }
+            
             for (int i = 1; i <= quantidadeMergulhadores; i++)
             {
                 int idMergulhador = i;
@@ -53,7 +64,7 @@ namespace ScubaSecurityClient
                     double consumo = 0.5 + (rand.NextDouble() * (1.3 - 0.5));
                     pressaoBar -= consumo;
 
-                    if (ultimaPressaoEnviada - pressaoBar >= 5.0 || pressaoBar >= 199.0)
+                    if (ultimaPressaoEnviada - pressaoBar >= 5.0)
                     {
                         string payload = $"ID:{id:D2} | Profundidade:{profundidade}m | Pressao:{pressaoBar:F2}Bar";
                         

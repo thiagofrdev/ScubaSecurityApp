@@ -17,11 +17,21 @@ namespace ScubaSecurityClient
             Console.WriteLine(" SCUBA SECURITY - SENSORES (CLIENTE - V1) ");
             Console.WriteLine("=============================================\n");
 
-            int quantidadeMergulhadores = 10;
+            Console.WriteLine("Quantos mergulhadores deseja monitorar?");
+            Console.WriteLine("Dica: Aperte ENTER para usar o valor padrão (10)");
+            Console.Write("Quantidade: ");
+
+            string input = Console.ReadLine()?.Trim().ToUpper() ?? "";
+            int quantidadeMergulhadores = string.IsNullOrWhiteSpace(input) ? 10 : int.Parse(input);
+
+            if (quantidadeMergulhadores == 10)
+            {
+                Console.WriteLine("Usando valor padrão: 10 mergulhadores.");
+            }
 
             Console.WriteLine($"Iniciando simulação com {quantidadeMergulhadores} Threads (Mergulhadores)...\n");
 
-            // Dispara 10 Threads, cada uma simulando um mergulhador diferente enviando dados para o servidor.
+            // Dispara as Threads, cada uma simulando um mergulhador diferente enviando dados para o servidor.
             for (int i = 1; i <= quantidadeMergulhadores; i++)
             {
                 int idMergulhador = i;
